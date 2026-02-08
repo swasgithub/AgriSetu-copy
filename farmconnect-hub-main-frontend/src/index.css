@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AgriSetu Design System - Earthy Agricultural Theme */
+/* All colors MUST be HSL */
+
+@layer base {
+  :root {
+    /* Earthy green/brown agricultural palette */
+    --background: 40 33% 97%;
+    --foreground: 142 35% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 142 35% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 142 35% 15%;
+
+    /* Forest Green Primary */
+    --primary: 142 45% 25%;
+    --primary-foreground: 40 33% 97%;
+
+    /* Earthy Brown Secondary */
+    --secondary: 30 50% 35%;
+    --secondary-foreground: 40 33% 97%;
+
+    /* Light Sage Muted */
+    --muted: 90 20% 90%;
+    --muted-foreground: 142 20% 40%;
+
+    /* Golden Wheat Accent */
+    --accent: 43 75% 50%;
+    --accent-foreground: 142 35% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 33% 97%;
+
+    --border: 90 20% 85%;
+    --input: 90 20% 85%;
+    --ring: 142 45% 25%;
+
+    --radius: 0.75rem;
+
+    /* Custom AgriSetu colors */
+    --earth: 30 50% 35%;
+    --earth-light: 30 40% 85%;
+    --leaf: 142 45% 35%;
+    --leaf-light: 142 30% 90%;
+    --wheat: 43 75% 50%;
+    --wheat-light: 43 60% 90%;
+    --sky: 200 75% 50%;
+    --sky-light: 200 60% 90%;
+    --soil: 25 40% 25%;
+
+    --sidebar-background: 142 30% 95%;
+    --sidebar-foreground: 142 35% 15%;
+    --sidebar-primary: 142 45% 25%;
+    --sidebar-primary-foreground: 40 33% 97%;
+    --sidebar-accent: 142 20% 90%;
+    --sidebar-accent-foreground: 142 35% 15%;
+    --sidebar-border: 90 20% 85%;
+    --sidebar-ring: 142 45% 25%;
+  }
+
+  .dark {
+    --background: 142 35% 8%;
+    --foreground: 40 33% 95%;
+
+    --card: 142 30% 12%;
+    --card-foreground: 40 33% 95%;
+
+    --popover: 142 30% 12%;
+    --popover-foreground: 40 33% 95%;
+
+    --primary: 142 40% 45%;
+    --primary-foreground: 142 35% 8%;
+
+    --secondary: 30 40% 45%;
+    --secondary-foreground: 40 33% 95%;
+
+    --muted: 142 20% 20%;
+    --muted-foreground: 90 15% 65%;
+
+    --accent: 43 70% 55%;
+    --accent-foreground: 142 35% 8%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 40 33% 95%;
+
+    --border: 142 20% 20%;
+    --input: 142 20% 20%;
+    --ring: 142 40% 45%;
+
+    --earth: 30 40% 45%;
+    --earth-light: 30 30% 25%;
+    --leaf: 142 40% 45%;
+    --leaf-light: 142 25% 20%;
+    --wheat: 43 70% 55%;
+    --wheat-light: 43 50% 25%;
+    --sky: 200 70% 55%;
+    --sky-light: 200 50% 25%;
+    --soil: 25 30% 35%;
+
+    --sidebar-background: 142 30% 10%;
+    --sidebar-foreground: 40 33% 95%;
+    --sidebar-primary: 142 40% 45%;
+    --sidebar-primary-foreground: 142 35% 8%;
+    --sidebar-accent: 142 20% 18%;
+    --sidebar-accent-foreground: 40 33% 95%;
+    --sidebar-border: 142 20% 20%;
+    --sidebar-ring: 142 40% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--leaf)) 50%,
+      hsl(var(--earth)) 100%
+    );
+  }
+
+  .gradient-card {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--leaf-light)) 100%
+    );
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--leaf)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
