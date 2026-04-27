@@ -50,8 +50,11 @@ const Login = () => {
         description: `Welcome back, ${data.user.name} 🌱`,
       });
 
-      navigate(data.user.role === "farmer" ? "/dashboard/farmer" : "/");
-
+      if (data.user.role === "farmer") navigate("/dashboard/farmer");
+      else if (data.user.role === "supplier") navigate("/dashboard/supplier");
+      else if (data.user.role === "equipment_owner") navigate("/dashboard/owner");
+      else navigate("/");
+     
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -102,7 +105,7 @@ const Login = () => {
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" /> 
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}

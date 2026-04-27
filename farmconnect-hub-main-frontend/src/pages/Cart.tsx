@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Trash2, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -29,33 +31,20 @@ const Cart = () => {
         0
     );
 
-    // ✅ Checkout
-    const handleCheckout = async () => {
-        try {
-            const token = localStorage.getItem("token");
-
-            const orderData = {
+    //  Checkout
+    const handleCheckout = () => {
+        navigate("/checkout", {
+            state: {
                 items: cart.map((item) => ({
                     product: item._id,
-                    quantity: item.quantity,
+                    name: item.name,
                     price: item.price,
+                    quantity: item.quantity,
+                    image: item.image
                 })),
                 totalAmount,
-            };
-
-            await axios.post("/api/orders", orderData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            alert("Order placed successfully!");
-            localStorage.removeItem("cart");
-            setCart([]);
-        } catch (error) {
-            console.log(error);
-            alert("Checkout failed");
-        }
+            }
+        });
     };
 
     return (

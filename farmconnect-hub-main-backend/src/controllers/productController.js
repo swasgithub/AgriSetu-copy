@@ -33,12 +33,57 @@ export const createProduct = async (req, res) => {
       description,
       unit,
       rating,
-      supplier: req.user.id 
+      supplier: req.user._id 
     });
 
     res.status(201).json(product);
   } catch (error) {
     console.log("Create Product Error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//update product
+export const updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
+
+    // ✅ FIX HERE
+    if (product.supplier.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    Object.assign(product, req.body);
+    await product.save();
+
+    res.json(product);
+  } catch (error) {
+    console.log("Update Product Error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//delete a product
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
+
+    // ✅ FIX HERE
+    if (product.supplier.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    await product.deleteOne();
+
+    res.json({ message: "Product deleted" });
+  } catch (error) {
+    console.log("Delete Product Error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };

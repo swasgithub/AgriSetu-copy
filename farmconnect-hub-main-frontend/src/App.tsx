@@ -10,8 +10,18 @@ import Consult from "./pages/Consult";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
-import FarmerDashboard from "./components/ui/FarmerDashboard";
+import FarmerDashboard from "./pages/FarmerDashboard";
+import SupplierDashboard from "./pages/SupplierDashboard";
+import OwnerDashboard from "./pages/OwnerDashboard";
 import Cart from "./pages/Cart"
+import AddProduct from "./pages/addProduct";
+import MyProducts from "./pages/myProducts";
+import EditProduct from "./pages/EditProduct";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import AddMachine from "./pages/AddMachine";
+import MyMachines from "./pages/MyMachines";
+import EditMachine from "./pages/EditMachine";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +40,16 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard/farmer" element={<FarmerDashboard />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+          <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/my-products" element={<MyProducts />} />
+          <Route path="/edit-product/:id" element={<EditProduct />} />
+          <Route path="/add-machine" element={<AddMachine />} />
+          <Route path="/my-machines" element={<MyMachines />} />
+          <Route path="/edit-machine/:id" element={<EditMachine />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

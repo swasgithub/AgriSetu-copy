@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,31 +8,72 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { machines } from "@/data/demoData";
+import axios from "axios";
 
 const Rent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("All");
+  const [machines, setMachines] = useState([]);
   const { toast } = useToast();
 
   const machineTypes = ["All", "Tractor", "Drone", "Harvester", "Sprayer", "Tiller", "Seeder"];
 
-  const filteredMachines = machines.filter((machine) => {
-    const matchesSearch = machine.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = selectedType === "All" || machine.type === selectedType;
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        const { data } = await axios.get("/api/machines");
+        setMachines(data);
+      } catch (error) {
+        console.log("FETCH MACHINE ERROR:", error);
+      }
+    };
+
+    fetchMachines();
+  }, []);
+
+  const filteredMachines = machines.filter((machine: any) => {
+    const matchesSearch = machine.name
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    const matchesType =
+      selectedType === "All" || machine.type === selectedType;
+
     return matchesSearch && matchesType;
   });
 
-  const handleRentRequest = (machineName: string) => {
-    toast({
-      title: "Rental Request Sent",
-      description: `Your request for ${machineName} has been submitted. We'll contact you shortly.`,
-    });
+  const handleRentRequest = async (machine: any) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        "/api/rentals",
+        {
+          machineId: machine._id,
+          startDate: new Date(),
+          endDate: new Date(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast({
+        title: "Rental Request Sent",
+        description: `${machine.name} requested successfully`,
+      });
+
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       {/* Hero */}
       <section className="bg-earth-light py-12">
         <div className="container mx-auto px-4">
@@ -60,7 +101,7 @@ const Rent = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-2 flex-wrap">
               {machineTypes.map((type) => (
                 <Button
@@ -86,12 +127,11 @@ const Rent = () => {
                     alt={machine.name}
                     className="w-full h-full object-cover"
                   />
-                  <Badge 
-                    className={`absolute top-3 right-3 ${
-                      machine.available 
-                        ? "bg-leaf text-primary-foreground" 
+                  <Badge
+                    className={`absolute top-3 right-3 ${machine.available
+                        ? "bg-leaf text-primary-foreground"
                         : "bg-destructive text-destructive-foreground"
-                    }`}
+                      }`}
                   >
                     {machine.available ? (
                       <><CheckCircle className="w-3 h-3 mr-1" /> Available</>
@@ -110,33 +150,37 @@ const Rent = () => {
                   <p className="text-sm text-muted-foreground mb-3">
                     {machine.description}
                   </p>
-                  
-                  {/* Specs */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {machine.specs.map((spec, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {spec}
-                      </Badge>
-                    ))}
-                  </div>
+
+
+
 
                   {/* Pricing */}
                   <div className="flex items-center justify-between mb-4 p-3 bg-muted rounded-lg">
+
+                    {/* Daily */}
                     <div className="text-center">
                       <div className="text-xs text-muted-foreground">Daily</div>
-                      <div className="font-bold text-primary">₹{machine.dailyRate.toLocaleString()}</div>
+                      <div className="font-bold text-primary">
+                        ₹{machine.pricePerDay?.toLocaleString()}
+                      </div>
                     </div>
+
                     <div className="h-8 w-px bg-border" />
+
+                    {/* Weekly (calculated) */}
                     <div className="text-center">
                       <div className="text-xs text-muted-foreground">Weekly</div>
-                      <div className="font-bold text-primary">₹{machine.weeklyRate.toLocaleString()}</div>
+                      <div className="font-bold text-primary">
+                        ₹{(machine.pricePerDay * 7)?.toLocaleString()}
+                      </div>
                     </div>
+
                   </div>
 
-                  <Button 
+                  <Button
                     className="w-full gap-2"
                     disabled={!machine.available}
-                    onClick={() => handleRentRequest(machine.name)}
+                    onClick={() => handleRentRequest(machine)}
                   >
                     <Calendar className="w-4 h-4" />
                     {machine.available ? "Request Rental" : "Not Available"}

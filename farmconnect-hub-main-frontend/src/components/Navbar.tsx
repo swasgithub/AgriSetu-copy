@@ -24,10 +24,31 @@ const Navbar = () => {
     { path: "/consult", label: "AI Consult", icon: Bot },
   ];
 
-  if (user?.role === "farmer") {
-    navLinks.push({ path: "/dashboard/farmer", label: "Dashboard", icon: LayoutDashboard });
-  }
+ const getDashboardPath = () => {
+    if (!user) return null;
 
+    switch (user.role) {
+      case "farmer":
+        return "/dashboard/farmer";
+      case "supplier":
+        return "/dashboard/supplier";
+      case "equipment_owner":
+        return "/dashboard/owner";
+      default:
+        return null;
+    }
+  };
+
+    const dashboardPath = getDashboardPath();
+
+  // add dashboard for all roles
+  if (dashboardPath) {
+    navLinks.push({
+      path: dashboardPath,
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    });
+  }
   const isActive = (path: string) => location.pathname === path;
 
   return (

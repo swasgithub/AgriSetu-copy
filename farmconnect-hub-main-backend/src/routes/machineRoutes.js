@@ -5,16 +5,22 @@ import {
   getMachineById,
   updateMachine,
   deleteMachine,
+  getMyMachines,
 } from "../controllers/machineController.js";
 
-import {protect} from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect, createMachine);
+// Only equipment owners can create
+router.post("/", protect, authorize("equipment_owner"), createMachine);
+
 router.get("/", getAllMachines);
+router.get("/my", protect, authorize("equipment_owner"), getMyMachines);
 router.get("/:id", getMachineById);
-router.put("/:id", protect, updateMachine);
-router.delete("/:id", protect, deleteMachine);
+
+// Only owner can update/delete (plus controller check)
+router.put("/:id", protect, authorize("equipment_owner"), updateMachine);
+router.delete("/:id", protect, authorize("equipment_owner"), deleteMachine);
 
 export default router;

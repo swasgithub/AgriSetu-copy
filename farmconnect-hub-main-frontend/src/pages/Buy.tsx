@@ -35,12 +35,12 @@ const Buy = () => {
 
     fetchProducts();
 
-    // ✅ Load cart from localStorage
+    // Load cart from localStorage
     const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCart(storedCart);
   }, []);
 
-  // ✅ Filter logic
+  // Filter logic
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       ?.toLowerCase()
@@ -52,7 +52,7 @@ const Buy = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // ✅ ADD TO CART
+  // ADD TO CART
   const addToCart = (product) => {
     let cartData = JSON.parse(localStorage.getItem("cart") || "[]");
 
@@ -73,37 +73,20 @@ const Buy = () => {
     });
   };
 
-  // ✅ BUY FUNCTION (UNCHANGED)
-  const handleBuy = async (product) => {
-    try {
-      const token = localStorage.getItem("token");
-
-      await axios.post(
-        "/api/orders",
-        {
-          items: [
-            {
-              product: product._id,
-              quantity: 1,
-              price: product.price,
-            },
-          ],
-          totalAmount: product.price,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      toast({
-        title: "Order placed!",
-        description: `${product.name} purchased successfully`,
-      });
-    } catch (error) {
-      console.log("Order error:", error);
-    }
+  // BUY FUNCTION 
+  const handleBuy = (product) => {
+    navigate("/checkout", { 
+      state: { 
+        items: [{ 
+          product: product._id, 
+          name: product.name, 
+          price: product.price, 
+          quantity: 1,
+          image: product.image 
+        }],
+        totalAmount: product.price 
+      } 
+    });
   };
 
   return (

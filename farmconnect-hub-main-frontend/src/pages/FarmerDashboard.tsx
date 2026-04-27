@@ -11,13 +11,13 @@ import {
   Tractor,
   User,
 } from "lucide-react";
-
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { agents, machines, products } from "@/data/demoData";
+import { agents} from "@/data/demoData";
+
+
 
 const FarmerDashboard = () => {
   const [user, setUser] = useState(null);
@@ -41,41 +41,27 @@ const FarmerDashboard = () => {
         console.log(data)
         setUser(data);
       } catch (error) {
-        console.log("User fetch error:", error.message);
-        setUser(null);
-      } finally {
+  console.log("AUTH ERROR:", error.response?.data || error.message);
+  setUser(null);
+}
+       finally {
         setLoading(false);
       }
     };
-    const fetchOrders = async () => {
-      try {
+       const fetchOrders = async () => {
         const token = localStorage.getItem("token");
-
-        const { data } = await axios.get("/api/orders/my", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setOrders(data);
-      } catch (error) {
-        console.log("Orders fetch error:", error.message);
-      }
+      const { data } = await axios.get("/api/orders/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+     
+      setOrders(data);
     };
     const fetchRentals = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const { data } = await axios.get("/api/rentals/my", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setRents(data);
-      } catch (error) {
-        console.log("Rentals fetch error:", error.message);
-      }
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get("/api/rentals/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRents(data);
     };
     const fetchProducts = async () => {
       const { data } = await axios.get("/api/products");
@@ -110,8 +96,8 @@ const FarmerDashboard = () => {
   }
 
   // Role check
-  if (user.role && user.role !== "farmer") {
-    return <Navigate to="/" replace />;
+   if (user.role && user.role !== "farmer") {
+  return <Navigate to="/" replace />;
   }
 
   const featuredProducts = products.slice(0, 3);
@@ -168,54 +154,11 @@ const FarmerDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
-
-      <section className="bg-gradient-to-br from-leaf-light via-background to-wheat-light py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <Badge className="mb-4 bg-primary text-primary-foreground">
-                Farmer Dashboard
-              </Badge>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Welcome, {user.name || "Farmer"}
-              </h1>
-              <p className="text-muted-foreground text-lg">
-                This dashboard provides farmers with a centralized platform to
-                manage their profile, explore agricultural products, rent
-                machinery, and access AI-powered guidance all in one convenient
-                place.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Link to="/buy">
-                <Button className="gap-2">
-                  <ShoppingCart className="w-4 h-4" />
-                  Buy Inputs
-                </Button>
-              </Link>
-              <Link to="/rent">
-                <Button variant="outline" className="gap-2">
-                  <Tractor className="w-4 h-4" />
-                  Rent Equipment
-                </Button>
-              </Link>
-              <Link to="/consult">
-                <Button variant="outline" className="gap-2">
-                  <Bot className="w-4 h-4" />
-                  Ask AI Agents
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4 space-y-8">
-
+      <DashboardLayout
+      title="Farmer Dashboard"
+      description="Manage your profile, products, rentals and AI tools."
+      user={user}
+    >
           {/* Quick Stats */}
           <div className="grid gap-6 md:grid-cols-3">
             {quickStats.map((item) => (
@@ -233,9 +176,9 @@ const FarmerDashboard = () => {
                     </p>
                     {item.label === "Your Orders" && orders.length > 0 && (
                       <div className="mt-2 space-y-1">
-                        {orders.slice(0, 2).map((order) => (
+                        {orders.slice(0, 3).map((order) => (
                           <p key={order._id} className="text-xs text-muted-foreground">
-                            Rs {order.totalAmount}
+                             Rs {order.totalAmount}
                           </p>
                         ))}
                       </div>
@@ -348,9 +291,9 @@ const FarmerDashboard = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {featuredProducts.map((product) => (
-                  <Link to={`/product/${product.id}`} key={product.id}>
+                  <Link to={`/product/${product._id}`} key={product._id}>
                     <div className="rounded-lg border p-3 hover:shadow cursor-pointer">
-                      <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center justify-between gap-4">
                         <div>
                           <p className="font-medium text-foreground">
                             {product.name}
@@ -375,7 +318,7 @@ const FarmerDashboard = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {availableMachines.map((machine) => (
-                  <Link to={`/machine/${machine.id}`} key={machine.id}>
+                  <Link to={`/machine/${machine._id}`} key={machine._id}>
                     <div className="rounded-lg border p-3 hover:shadow cursor-pointer">
                       <div className="flex items-center justify-between gap-3">
                         <div>
@@ -428,19 +371,7 @@ const FarmerDashboard = () => {
               <CardTitle>Platform Status</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
-
-
-              <div className="rounded-lg border p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Tractor className="w-4 h-4 text-primary" />
-                  <p className="font-medium">Rentals API</p>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Connect to `/api/rentals/my`.
-                </p>
-              </div>
-
-              <div className="rounded-lg border p-4">
+               <div className="rounded-lg border p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Sprout className="w-4 h-4 text-primary" />
                   <p className="font-medium">AI history</p>
@@ -452,11 +383,11 @@ const FarmerDashboard = () => {
             </CardContent>
           </Card>
 
-        </div>
-      </main>
+    </DashboardLayout>
 
-      <Footer />
-    </div>
+           
+           
+      
   );
 };
 

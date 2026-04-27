@@ -17,6 +17,7 @@ const machineSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+  
     available: {
       type: Boolean,
       default: true,

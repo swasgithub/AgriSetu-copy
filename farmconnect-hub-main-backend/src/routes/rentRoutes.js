@@ -6,13 +6,20 @@ import {
   updateRentStatus,
 } from "../controllers/rentController.js";
 
-import {protect} from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect, createRent);
-router.get("/my", protect, getMyRentals);
-router.get("/owner", protect, getOwnerRentals);
-router.put("/:id", protect, updateRentStatus);
+// Only farmers rent
+router.post("/", protect, authorize("farmer"), createRent);
+
+// Farmer view
+router.get("/my", protect, authorize("farmer"), getMyRentals);
+
+// Owner view
+router.get("/owner", protect, authorize("equipment_owner"), getOwnerRentals);
+
+// Owner updates status
+router.put("/:id/status", protect, authorize("equipment_owner"), updateRentStatus);
 
 export default router;

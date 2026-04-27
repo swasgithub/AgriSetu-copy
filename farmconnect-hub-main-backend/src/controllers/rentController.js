@@ -1,7 +1,6 @@
 import Rent from "../models/rent.js";
 import Machine from "../models/machine.js";
 
-// CREATE RENT (Farmer rents machine)
 export const createRent = async (req, res) => {
   try {
     const { machineId, startDate, endDate } = req.body;
@@ -11,17 +10,32 @@ export const createRent = async (req, res) => {
       return res.status(404).json({ message: "Machine not found" });
     }
 
-    const days =
-      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24) + 1;
+    // Prevent renting own machine
+    if (machine.owner.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: "You cannot rent your own machine" });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Invalid date check
+    if (end < start) {
+      return res.status(400).json({ message: "End date must be after start date" });
+    }
+
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    const totalAmount = days * machine.pricePerDay;
 
     const rent = await Rent.create({
       machine: machineId,
       user: req.user._id,
       owner: machine.owner,
-      startDate,
-      endDate,
+      startDate: start,
+      endDate: end,
       totalDays: days,
-      totalAmount: days * machine.pricePerDay, 
+      totalAmount,
+      status: "pending" // important for lifecycle
     });
 
     res.status(201).json(rent);
@@ -46,7 +60,7 @@ export const getMyRentals = async (req, res) => {
 // GET OWNER RENTALS (Equipment Owner)
 export const getOwnerRentals = async (req, res) => {
   try {
-    const rentals = await Rent.find({ owner: req.user.id })
+    const rentals = await Rent.find({ owner: req.user._id })
       .populate("machine")
       .populate("user", "name");
 
